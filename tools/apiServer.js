@@ -38,28 +38,10 @@ server.use(function (req, res, next) {
 // Add createdAt to all POSTS
 server.use((req, res, next) => {
   if (req.method === "POST") {
-    req.body.createdAt = Date.now();
+    res.status(400).send("Could not create new!");
   }
   // Continue to JSON Server router
   next();
-});
-
-server.post("/switches/", function (req, res, next) {
-  const error = validateItem(req.body);
-  if (error) {
-    res.status(400).send(error);
-  } else {
-    next();
-  }
-});
-
-server.post("/captiveImages/", function (req, res, next) {
-  const error = validateCategory(req.body);
-  if (error) {
-    res.status(400).send(error);
-  } else {
-    next();
-  }
 });
 
 // Use default router
@@ -70,23 +52,3 @@ const port = 3001;
 server.listen(port, () => {
   console.log(`JSON Server is running on port ${port}`);
 });
-
-// Centralized logic
-
-// Returns a URL friendly slug
-function createSlug(value) {
-  return value
-    .replace(/[^a-z0-9_]+/gi, "-")
-    .replace(/^-|-$/g, "")
-    .toLowerCase();
-}
-
-function validateItem(item) {
-  if (!item.title) return "Title is required.";
-  return "";
-}
-
-function validateCategory(category) {
-  if (!category.label) return "Label is required.";
-  return "";
-}
