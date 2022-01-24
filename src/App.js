@@ -1,18 +1,17 @@
 import "./App.css";
-import { Container, Nav } from "react-bootstrap";
+import { Container, Tabs, Tab, Button, Stack } from "react-bootstrap";
+import SwitchesPage from "./components/SwitchesPage";
 
 function App() {
   return (
     <Container className="p-3">
-      <Nav variant="tabs" defaultActiveKey="switches">
-        <Nav.Item>
-          <Nav.Link eventKey="switches">Switches</Nav.Link>
-        </Nav.Item>
-        <Nav.Item>
-          <Nav.Link eventKey="captive">Captive portal</Nav.Link>
-        </Nav.Item>
-      </Nav>
-      <Container></Container>
+      <Tabs defaultActiveKey="switches" className="mb-3">
+        <Tab eventKey="switches" title="Switches">
+          <SwitchesPage />
+        </Tab>
+        <Tab eventKey="captive" title="Captive portal">
+        </Tab>
+      </Tabs>
     </Container>
   );
 }
