@@ -2,17 +2,6 @@ import React, { useState, useEffect, useReducer } from "react";
 import { Stack, Form, Figure, Spinner } from "react-bootstrap";
 import * as api from "../api/captiveImageApi";
 
-function stateReducer(state, action) {
-  switch (action.type) {
-    case "loading":
-      return { ...state, loading: true };
-    case "setImage":
-      return { ...state, loading: false, image: action.image };
-    default:
-      throw new Error();
-  }
-}
-
 function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
@@ -24,6 +13,7 @@ function getBase64(file) {
 
 function ImageForm(props) {
   const [image, setImage] = useState(props.image);
+  const [uploading, setUploading] = useState(false);
   const imageUrl = `data:image/jpeg;base64,${image.data}`;
   const loadImage = (file) => {
     getBase64(file).then((data) => {
@@ -45,10 +35,12 @@ function ImageForm(props) {
   };
   const onSubmit = (e) => {
     e.preventDefault();
+    setUploading(true);
+    props.onSave(image);
   };
   const isInvalid = image === props.image;
   return (
-    <Form onSubmit={onSubmit}>
+    <Form onSubmit={onSubmit} onReset={() => setImage(props.image)}>
       <Stack gap={2}>
         <Figure className="mx-auto">
           <Figure.Image src={imageUrl} rounded />
@@ -63,8 +55,8 @@ function ImageForm(props) {
         <Form.Control
           type="submit"
           className="btn btn-primary"
-          value="Upload image"
-          disabled={isInvalid}
+          value={uploading ? "Uploading..." : "Upload image"}
+          disabled={isInvalid || uploading}
         />
         <Form.Control
           type="reset"
@@ -76,10 +68,27 @@ function ImageForm(props) {
   );
 }
 
+function stateReducer(state, action) {
+  switch (action.type) {
+    case "loading":
+      return { ...state, loading: true };
+    case "setImage":
+      return {
+        ...state,
+        loading: false,
+        image: action.image,
+        version: state.version + 1,
+      };
+    default:
+      throw new Error();
+  }
+}
+
 function CaptivePortalPage() {
   const [state, dispatch] = useReducer(stateReducer, {
     loading: false,
     image: null,
+    version: 0,
   });
   const setLoading = () => dispatch({ type: "loading" });
   const setImage = (image) => dispatch({ type: "setImage", image });
@@ -91,12 +100,24 @@ function CaptivePortalPage() {
     }
   }, [state.image]);
 
+  const onSaveChanges = (image) => {
+    setLoading();
+    var updated = { ...image };
+    api.saveCaptiveImage(updated).then((x) => setImage(x));
+  };
+
   return (
     <Stack gap={2} className="col-md-5 mx-auto">
       {state.image === null && (
         <Spinner className="mx-auto" variant="primary" animation="grow" />
       )}
-      {state.image !== null && <ImageForm image={state.image} />}
+      {state.image !== null && (
+        <ImageForm
+          key={state.version}
+          image={state.image}
+          onSave={onSaveChanges}
+        />
+      )}
     </Stack>
   );
 }
