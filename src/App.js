@@ -1,6 +1,7 @@
 import "./App.css";
-import { Container, Tabs, Tab, Button, Stack } from "react-bootstrap";
+import { Container, Tabs, Tab } from "react-bootstrap";
 import SwitchesPage from "./components/SwitchesPage";
+import CaptivePortalPage from "./components/CaptivePortalPage";
 
 function App() {
   return (
@@ -10,6 +11,7 @@ function App() {
           <SwitchesPage />
         </Tab>
         <Tab eventKey="captive" title="Captive portal">
+          <CaptivePortalPage />
         </Tab>
       </Tabs>
     </Container>
