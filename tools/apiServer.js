@@ -25,6 +25,17 @@ const middlewares = jsonServer.defaults({
 // Set default middlewares (logger, static, cors and no-cache)
 server.use(middlewares);
 
+// authentication & authorization
+server.db = router.db;
+const auth = require("json-server-auth");
+const rules = auth.rewriter({
+  switches: 660,
+  captiveImages: 600,
+  users: 600,
+});
+server.use(rules);
+server.use(auth);
+
 // To handle POST, PUT and PATCH you need to use a body-parser. Using JSON Server's bodyParser
 server.use(jsonServer.bodyParser);
 

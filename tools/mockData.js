@@ -12,7 +12,10 @@ const captiveImages = [
   },
 ];
 
+const users = [];
+
 module.exports = {
   switches,
   captiveImages,
+  users,
 };
