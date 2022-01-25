@@ -19,7 +19,7 @@ function switchesReducer(switches, action) {
   }
 }
 
-function Switches(props) {
+function SwitchesPage() {
   const [switches, dispatch] = useReducer(switchesReducer, []);
   const setSwitches = (switches) => dispatch({ type: "set", switches });
   const setLoading = (switchId) => dispatch({ type: "loading", switchId });
@@ -39,18 +39,14 @@ function Switches(props) {
     setLoading(switchId);
     const sw = switches.find((x) => x.id === switchId);
     const switched = e.target.checked;
-    var updated = { ...sw, switched };
+    const updated = { ...sw, switched };
     api.saveSwitch(updated).then((x) => updateSwitch(x));
   };
 
   return (
-    <Stack>
+    <Stack gap={2} className="col-md-5 mx-auto">
       {switches.length === 0 && (
-        <Spinner
-          className="col-md-5 mx-auto"
-          variant="primary"
-          animation="grow"
-        />
+        <Spinner className="mx-auto" variant="primary" animation="grow" />
       )}
       <ListGroup>
         {switches.map((x) => (
@@ -73,4 +69,4 @@ function Switches(props) {
   );
 }
 
-export default Switches;
+export default SwitchesPage;
