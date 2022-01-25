@@ -46,6 +46,7 @@ function ImageForm(props) {
   const onSubmit = (e) => {
     e.preventDefault();
   };
+  const isInvalid = image === props.image;
   return (
     <Form onSubmit={onSubmit}>
       <Stack gap={2}>
@@ -56,13 +57,14 @@ function ImageForm(props) {
         <Form.Control
           type="file"
           onChange={onFileSelected}
+          isInvalid={isInvalid}
           accept="image/jpeg"
         />
         <Form.Control
           type="submit"
           className="btn btn-primary"
           value="Upload image"
-          disabled={image === props.image}
+          disabled={isInvalid}
         />
         <Form.Control
           type="reset"
