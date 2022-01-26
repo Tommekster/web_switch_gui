@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Stack, Form, Button, Spinner, Alert } from "react-bootstrap";
 import useForm from "../hooks/useForm";
-import * as api from "../api/usersApi";
+import useAuth from "../hooks/useAuth";
 
 const initialFormData = {
   email: "", // required
@@ -11,23 +11,20 @@ const initialFormData = {
 
 function SignUpPage() {
   const { formData, resetForm, handleChange } = useForm(initialFormData);
+  const { registerUser, error } = useAuth();
   const [sending, setSending] = useState(false);
-  const [error, setError] = useState("");
 
-  function handleSubmit(e) {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setSending(true);
-    setError("");
-    const { email, password, username } = formData;
-    api
-      .signUp(email, password, username)
-      .then((data) => {
-        console.log(data);
-        resetForm();
-      })
-      .catch((error) => setError(error.message))
-      .finally(() => setSending(false));
-  }
+    try {
+      setSending(true);
+      const { email, password, username } = formData;
+      await registerUser(email, password, username);
+      resetForm();
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <Stack gap={2} className="col-md-5 mx-auto">
