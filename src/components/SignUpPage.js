@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Stack, Form, Button, Spinner, Alert } from "react-bootstrap";
+import useForm from "../hooks/useForm";
 import * as api from "../api/usersApi";
 
 const initialFormData = {
@@ -9,32 +10,23 @@ const initialFormData = {
 };
 
 function SignUpPage() {
-  const [formData, setFormData] = useState(initialFormData);
+  const { formData, resetForm, handleChange } = useForm(initialFormData);
   const [sending, setSending] = useState(false);
   const [error, setError] = useState("");
-
-  const resetForm = () => {
-    setError("");
-    setFormData(initialFormData);
-    setSending(false);
-  };
 
   function handleSubmit(e) {
     e.preventDefault();
     setSending(true);
     setError("");
+    const { email, password, username } = formData;
     api
-      .signUp(formData.email, formData.password, formData.username)
+      .signUp(email, password, username)
       .then((data) => {
         console.log(data);
         resetForm();
       })
       .catch((error) => setError(error.message))
       .finally(() => setSending(false));
-  }
-
-  function handleChange(e) {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
   }
 
   return (
