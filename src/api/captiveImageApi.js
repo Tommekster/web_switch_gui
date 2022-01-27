@@ -1,8 +1,8 @@
 import { handleResponse, handleError, API_URL } from "./apiUtils";
-const baseUrl = API_URL + "/captiveImages/";
+const baseUrl = API_URL + "/captiveImage/";
 
 export function getCaptiveImage(token) {
-  return fetch(baseUrl + "0", {
+  return fetch(baseUrl, {
     headers: {
       authorization: "Bearer " + token,
     },
@@ -12,7 +12,7 @@ export function getCaptiveImage(token) {
 }
 
 export function saveCaptiveImage(token, image) {
-  return fetch(baseUrl + "0", {
+  return fetch(baseUrl, {
     method: "PUT", // POST for create, PUT to update when id already exists.
     headers: {
       authorization: "Bearer " + token,

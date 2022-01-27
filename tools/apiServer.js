@@ -30,8 +30,9 @@ server.db = router.db;
 const auth = require("json-server-auth");
 const rules = auth.rewriter({
   switches: 660,
-  captiveImages: 600,
+  captiveImages: 664,
   users: 600,
+  "/captiveImage*": "/captiveImages/0$1",
 });
 server.use(rules);
 server.use(auth);
