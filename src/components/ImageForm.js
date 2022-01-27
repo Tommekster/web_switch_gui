@@ -17,19 +17,18 @@ function ImageForm(props) {
   const [uploading, setUploading] = useState(false);
   const { formData, resetForm, handleChange } = useForm({ file: null });
   useEffect(() => setImage(props.image), [props.image]);
-  const previewImage = async (file) => {
+  const previewImage = (file) => {
     setLoadingPreview(true);
-    try {
-      const data = await getBase64(file);
-      const newImage = {
-        filename: file.name,
-        mime: file.type,
-        data: data.split(",")[1],
-      };
-      setImage(newImage);
-    } finally {
-      setLoadingPreview(false);
-    }
+    getBase64(file)
+      .then((data) => {
+        const newImage = {
+          filename: file.name,
+          mime: file.type,
+          data: data.split(",")[1],
+        };
+        setImage(newImage);
+      })
+      .finally(() => setLoadingPreview(false));
   };
   const onFileSelected = (e) => {
     handleChange(e);
@@ -48,6 +47,7 @@ function ImageForm(props) {
     } finally {
       setUploading(false);
       resetForm();
+      setImage(props.image);
     }
   };
   const imageUrl = `data:image/jpeg;base64,${image.data}`;
@@ -56,7 +56,7 @@ function ImageForm(props) {
     <Form onSubmit={onSubmit} onReset={() => setImage(props.image)}>
       <Stack gap={2}>
         <Figure className="mx-auto">
-          {loadingPreview && <Spinner animation="grow" />}
+          {loadingPreview && <Spinner animation="grow" className="mx-auto" />}
           {!loadingPreview && <Figure.Image src={imageUrl} rounded />}
           <Figure.Caption>{image.filename}</Figure.Caption>
         </Figure>
