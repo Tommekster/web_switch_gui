@@ -9,7 +9,7 @@ import CaptivePortalPage from "./components/CaptivePortalPage";
 
 function App() {
   const _useUser = useUser();
-  const { isLoggedIn, logout } = _useUser;
+  const { isLoggedIn, logout, user } = _useUser;
   return (
     <UserContext.Provider value={{ ..._useUser }}>
       <Container className="p-3">
@@ -31,10 +31,18 @@ function App() {
               </Button>
             </Nav>
             <Tabs defaultActiveKey="switches">
-              <Tabs.Tab eventKey="switches" title="Switches">
+              <Tabs.Tab
+                eventKey="switches"
+                title="Switches"
+                disabled={!user?.roles?.includes("ROLE_SWITCH")}
+              >
                 <SwitchesPage />
               </Tabs.Tab>
-              <Tabs.Tab eventKey="captive" title="Captive portal">
+              <Tabs.Tab
+                eventKey="captive"
+                title="Captive portal"
+                disabled={!user?.roles?.includes("ROLE_CAPTIVE")}
+              >
                 <CaptivePortalPage />
               </Tabs.Tab>
             </Tabs>
