@@ -8,6 +8,10 @@ function switchesReducer(switches, action) {
       return switches.map((x) =>
         x.id === action.switchId ? { ...x, loading: true } : x
       );
+    case "stopLoading":
+      return switches.map((x) =>
+        x.id === action.switchId ? { ...x, loading: false } : x
+      );
     case "update":
       return switches.map((x) =>
         x.id === action.switch.id ? { ...action.switch, loading: false } : x
@@ -27,6 +31,8 @@ function SwitchesPage() {
   const setSwitches = (switches) => dispatch({ type: "set", switches });
   const setSwitchLoading = (switchId) =>
     dispatch({ type: "loading", switchId });
+  const stopSwitchLoading = (switchId) =>
+    dispatch({ type: "stopLoading", switchId });
   const updateSwitch = (sw) => {
     if (sw) {
       dispatch({ type: "update", switch: sw });
@@ -49,7 +55,10 @@ function SwitchesPage() {
     setSwitchLoading(switchId);
     const _switch = switches.find((x) => x.id === switchId);
     const updated = { ..._switch, switched };
-    api.saveSwitch(updated).then((x) => updateSwitch(x));
+    api
+      .saveSwitch(updated)
+      .then((x) => updateSwitch(x))
+      .finally(() => stopSwitchLoading(switchId));
   };
 
   return (
