@@ -1,5 +1,6 @@
-import React, { useState } from "react";
-import { Stack, Form, Figure } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import { Stack, Form, Figure, Spinner } from "react-bootstrap";
+import useForm from "../hooks/useForm";
 
 function getBase64(file) {
   return new Promise((resolve, reject) => {
@@ -12,41 +13,56 @@ function getBase64(file) {
 
 function ImageForm(props) {
   const [image, setImage] = useState(props.image);
+  const [loadingPreview, setLoadingPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const imageUrl = `data:image/jpeg;base64,${image.data}`;
-  const loadImage = (file) => {
-    getBase64(file).then((data) => {
+  const { formData, resetForm, handleChange } = useForm({ file: null });
+  useEffect(() => setImage(props.image), [props.image]);
+  const previewImage = async (file) => {
+    setLoadingPreview(true);
+    try {
+      const data = await getBase64(file);
       const newImage = {
         filename: file.name,
         mime: file.type,
         data: data.split(",")[1],
       };
       setImage(newImage);
-    });
+    } finally {
+      setLoadingPreview(false);
+    }
   };
   const onFileSelected = (e) => {
+    handleChange(e);
     if (e.target.files.length > 0 && e.target.files[0].type === "image/jpeg") {
       const file = e.target.files[0];
-      loadImage(file);
+      previewImage(file);
     } else {
       setImage(props.image);
     }
   };
-  const onSubmit = (e) => {
+  const onSubmit = async (e) => {
     e.preventDefault();
     setUploading(true);
-    props.onSave(image);
+    try {
+      await props.onSave(image);
+    } finally {
+      setUploading(false);
+      resetForm();
+    }
   };
+  const imageUrl = `data:image/jpeg;base64,${image.data}`;
   const isInvalid = image === props.image;
   return (
     <Form onSubmit={onSubmit} onReset={() => setImage(props.image)}>
       <Stack gap={2}>
         <Figure className="mx-auto">
-          <Figure.Image src={imageUrl} rounded />
+          {loadingPreview && <Spinner animation="grow" />}
+          {!loadingPreview && <Figure.Image src={imageUrl} rounded />}
           <Figure.Caption>{image.filename}</Figure.Caption>
         </Figure>
         <Form.Control
           type="file"
+          value={formData.file}
           onChange={onFileSelected}
           isInvalid={isInvalid}
           accept="image/jpeg"
