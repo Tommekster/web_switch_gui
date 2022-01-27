@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer } from "react";
 import { ListGroup, FormCheck, Stack, Spinner } from "react-bootstrap";
-import * as api from "../api/switchesApi";
+import useSwitches from "../hooks/useSwitches";
 
 function switchesReducer(switches, action) {
   switch (action.type) {
@@ -21,6 +21,7 @@ function switchesReducer(switches, action) {
 
 function SwitchesPage() {
   const [switches, dispatch] = useReducer(switchesReducer, []);
+  const api = useSwitches();
   const setSwitches = (switches) => dispatch({ type: "set", switches });
   const setLoading = (switchId) => dispatch({ type: "loading", switchId });
   const updateSwitch = (sw) => dispatch({ type: "update", switch: sw });
@@ -33,7 +34,7 @@ function SwitchesPage() {
           setSwitches(switches.map((x) => ({ ...x, loading: false })))
         );
     }
-  }, [switches.length]);
+  }, [api, switches.length]);
 
   const onSwitchChanged = (e, switchId) => {
     setLoading(switchId);
