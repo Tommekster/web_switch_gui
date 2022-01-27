@@ -1,5 +1,5 @@
-import React, { useEffect, useReducer } from "react";
-import { ListGroup, FormCheck, Stack, Spinner } from "react-bootstrap";
+import React, { useEffect, useState, useReducer } from "react";
+import { ListGroup, FormCheck, Stack, Spinner, Alert } from "react-bootstrap";
 import useSwitches from "../hooks/useSwitches";
 
 function switchesReducer(switches, action) {
@@ -21,32 +21,41 @@ function switchesReducer(switches, action) {
 
 function SwitchesPage() {
   const [switches, dispatch] = useReducer(switchesReducer, []);
+  const [loading, setLoading] = useState(false);
   const api = useSwitches();
+  const { error } = api;
   const setSwitches = (switches) => dispatch({ type: "set", switches });
-  const setLoading = (switchId) => dispatch({ type: "loading", switchId });
-  const updateSwitch = (sw) => dispatch({ type: "update", switch: sw });
+  const setSwitchLoading = (switchId) =>
+    dispatch({ type: "loading", switchId });
+  const updateSwitch = (sw) => {
+    if (sw) {
+      dispatch({ type: "update", switch: sw });
+    }
+  };
 
   useEffect(() => {
-    if (switches.length === 0) {
+    if (!error && switches.length === 0) {
+      setLoading(true);
       api
         .getSwitches()
         .then((switches) =>
           setSwitches(switches.map((x) => ({ ...x, loading: false })))
-        );
+        )
+        .finally(() => setLoading(false));
     }
-  }, [api, switches.length]);
+  }, [api, error, switches.length]);
 
-  const onSwitchChanged = (e, switchId) => {
-    setLoading(switchId);
-    const sw = switches.find((x) => x.id === switchId);
-    const switched = e.target.checked;
-    const updated = { ...sw, switched };
+  const onSwitchChanged = (switchId, switched) => {
+    setSwitchLoading(switchId);
+    const _switch = switches.find((x) => x.id === switchId);
+    const updated = { ..._switch, switched };
     api.saveSwitch(updated).then((x) => updateSwitch(x));
   };
 
   return (
-    <Stack gap={2} className="col-md-5 mx-auto">
-      {switches.length === 0 && (
+    <Stack gap={2} className="mt-3 mx-auto col-md-5">
+      {error && <Alert variant="danger">{error}</Alert>}
+      {loading && (
         <Spinner className="mx-auto" variant="primary" animation="grow" />
       )}
       <ListGroup>
@@ -59,7 +68,7 @@ function SwitchesPage() {
                 label={x.label}
                 checked={x.switched}
                 disabled={x.loading}
-                onChange={(e) => onSwitchChanged(e, x.id)}
+                onChange={(e) => onSwitchChanged(x.id, e.target.checked)}
               />
               {x.loading && <Spinner animation="border" size="sm" />}
             </Stack>
