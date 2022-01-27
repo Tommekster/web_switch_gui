@@ -1,72 +1,7 @@
-import React, { useState, useEffect, useReducer } from "react";
-import { Stack, Form, Figure, Spinner } from "react-bootstrap";
 import * as api from "../api/captiveImageApi";
-
-function getBase64(file) {
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onload = () => resolve(reader.result);
-    reader.onerror = (error) => reject(error);
-  });
-}
-
-function ImageForm(props) {
-  const [image, setImage] = useState(props.image);
-  const [uploading, setUploading] = useState(false);
-  const imageUrl = `data:image/jpeg;base64,${image.data}`;
-  const loadImage = (file) => {
-    getBase64(file).then((data) => {
-      const newImage = {
-        filename: file.name,
-        mime: file.type,
-        data: data.split(",")[1],
-      };
-      setImage(newImage);
-    });
-  };
-  const onFileSelected = (e) => {
-    if (e.target.files.length > 0 && e.target.files[0].type === "image/jpeg") {
-      const file = e.target.files[0];
-      loadImage(file);
-    } else {
-      setImage(props.image);
-    }
-  };
-  const onSubmit = (e) => {
-    e.preventDefault();
-    setUploading(true);
-    props.onSave(image);
-  };
-  const isInvalid = image === props.image;
-  return (
-    <Form onSubmit={onSubmit} onReset={() => setImage(props.image)}>
-      <Stack gap={2}>
-        <Figure className="mx-auto">
-          <Figure.Image src={imageUrl} rounded />
-          <Figure.Caption>{image.filename}</Figure.Caption>
-        </Figure>
-        <Form.Control
-          type="file"
-          onChange={onFileSelected}
-          isInvalid={isInvalid}
-          accept="image/jpeg"
-        />
-        <Form.Control
-          type="submit"
-          className="btn btn-primary"
-          value={uploading ? "Uploading..." : "Upload image"}
-          disabled={isInvalid || uploading}
-        />
-        <Form.Control
-          type="reset"
-          className="btn btn-outline-secondary"
-          value="Cancel"
-        />
-      </Stack>
-    </Form>
-  );
-}
+import React, { useEffect, useReducer } from "react";
+import { Stack, Spinner } from "react-bootstrap";
+import ImageForm from "./ImageForm";
 
 function stateReducer(state, action) {
   switch (action.type) {
@@ -107,11 +42,11 @@ function CaptivePortalPage() {
   };
 
   return (
-    <Stack gap={2} className="col-md-5 mx-auto">
-      {state.image === null && (
+    <Stack gap={2} className="mt-3 mx-auto col-md-5">
+      {!state.image && (
         <Spinner className="mx-auto" variant="primary" animation="grow" />
       )}
-      {state.image !== null && (
+      {state.image && (
         <ImageForm
           key={state.version}
           image={state.image}
