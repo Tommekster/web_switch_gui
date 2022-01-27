@@ -4,6 +4,10 @@ export async function handleResponse(response) {
     const error = await response.text();
     throw new UnauthorizedError(error);
   }
+  if (response.status === 403) {
+    const error = await response.text();
+    throw new ForbiddenError(error);
+  }
   if (response.status === 400) {
     // So, a server-side validation error occurred.
     // Server side validation returns a string error message, so parse as text instead of json.
@@ -24,3 +28,4 @@ const API_URL = "http://localhost:3001";
 export { API_URL };
 
 export class UnauthorizedError extends Error {}
+export class ForbiddenError extends Error {}
