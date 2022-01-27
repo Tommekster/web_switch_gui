@@ -1,5 +1,5 @@
 import "./App.css";
-import { Container, Tabs } from "react-bootstrap";
+import { Container, Tabs, Button, Nav } from "react-bootstrap";
 import { UserContext } from "./hooks/UserContext";
 import useUser from "./hooks/useUser";
 import SignUpPage from "./components/SignUpPage";
@@ -9,10 +9,10 @@ import CaptivePortalPage from "./components/CaptivePortalPage";
 
 function App() {
   const _useUser = useUser();
-  const { isLoggedIn } = _useUser;
+  const { isLoggedIn, logout } = _useUser;
   return (
     <UserContext.Provider value={{ ..._useUser }}>
-      <Container className="p-3 mb-3">
+      <Container className="p-3">
         {!isLoggedIn && (
           <Tabs defaultActiveKey="login-in">
             <Tabs.Tab eventKey="login-in" title="Login">
@@ -24,14 +24,21 @@ function App() {
           </Tabs>
         )}
         {isLoggedIn && (
-          <Tabs defaultActiveKey="captive">
-            <Tabs.Tab eventKey="switches" title="Switches">
-              <SwitchesPage />
-            </Tabs.Tab>
-            <Tabs.Tab eventKey="captive" title="Captive portal">
-              <CaptivePortalPage />
-            </Tabs.Tab>
-          </Tabs>
+          <>
+            <Nav className="justify-content-end">
+              <Button variant="outline-danger" onClick={logout}>
+                Log out
+              </Button>
+            </Nav>
+            <Tabs defaultActiveKey="switches">
+              <Tabs.Tab eventKey="switches" title="Switches">
+                <SwitchesPage />
+              </Tabs.Tab>
+              <Tabs.Tab eventKey="captive" title="Captive portal">
+                <CaptivePortalPage />
+              </Tabs.Tab>
+            </Tabs>
+          </>
         )}
       </Container>
     </UserContext.Provider>
