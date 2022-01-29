@@ -24,7 +24,7 @@ export function handleError(error) {
   throw error;
 }
 
-const API_URL = "http://localhost:3001";
+const API_URL = process.env.REACT_APP_API_URL;
 export { API_URL };
 
 export class UnauthorizedError extends Error {}
