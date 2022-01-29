@@ -6,7 +6,9 @@ export default function useUser() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const { user, token } = JSON.parse(localStorage.getItem("user"));
+    const { user, token } = JSON.parse(
+      localStorage.getItem("user") || '{"user":null,"token":null}'
+    );
     setUser(user);
     setToken(token);
   }, []);

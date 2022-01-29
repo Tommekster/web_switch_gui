@@ -1,5 +1,5 @@
 import "./App.css";
-import { Container, Tabs, Button, Nav } from "react-bootstrap";
+import { Container, Tabs, Tab, Button, Nav } from "react-bootstrap";
 import { UserContext } from "./hooks/UserContext";
 import useUser from "./hooks/useUser";
 import SignUpPage from "./components/SignUpPage";
@@ -15,12 +15,12 @@ function App() {
       <Container className="p-3">
         {!isLoggedIn && (
           <Tabs defaultActiveKey="login-in">
-            <Tabs.Tab eventKey="login-in" title="Login">
+            <Tab eventKey="login-in" title="Login">
               <LoginPage />
-            </Tabs.Tab>
-            <Tabs.Tab eventKey="sign-up" title="Sign up">
+            </Tab>
+            <Tab eventKey="sign-up" title="Sign up">
               <SignUpPage />
-            </Tabs.Tab>
+            </Tab>
           </Tabs>
         )}
         {isLoggedIn && (
@@ -31,20 +31,20 @@ function App() {
               </Button>
             </Nav>
             <Tabs defaultActiveKey="switches">
-              <Tabs.Tab
+              <Tab
                 eventKey="switches"
                 title="Switches"
                 disabled={!user?.roles?.includes("ROLE_SWITCH")}
               >
                 <SwitchesPage />
-              </Tabs.Tab>
-              <Tabs.Tab
+              </Tab>
+              <Tab
                 eventKey="captive"
                 title="Captive portal"
                 disabled={!user?.roles?.includes("ROLE_CAPTIVE")}
               >
                 <CaptivePortalPage />
-              </Tabs.Tab>
+              </Tab>
             </Tabs>
           </>
         )}

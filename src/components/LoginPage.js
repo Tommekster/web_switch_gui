@@ -28,23 +28,21 @@ function LoginPage() {
   return (
     <Stack gap={2} className="col-md-5 mx-auto">
       <h1>Login</h1>
-      <Form
-        onSubmit={(e) => handleSubmit(e)}
-        onChange={(e) => handleChange(e)}
-        disabled={sending}
-      >
+      <Form onSubmit={handleSubmit} disabled={sending}>
         <Stack gap={2}>
           {error && <Alert variant="danger">{error}</Alert>}
           <Form.Control
             type="text"
             placeholder="Email"
             value={formData.email}
+            onChange={handleChange}
             name="email"
           />
           <Form.Control
             type="password"
             placeholder="Password"
             value={formData.password}
+            onChange={handleChange}
             name="password"
           />
           <Button variant="primary" type="submit" disabled={sending}>

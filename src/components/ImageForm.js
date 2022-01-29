@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Stack, Form, Figure, Spinner } from "react-bootstrap";
+import { Stack, Form, Figure, Spinner, Button } from "react-bootstrap";
 import useForm from "../hooks/useForm";
 
 function getBase64(file) {
@@ -15,7 +15,7 @@ function ImageForm(props) {
   const [image, setImage] = useState(props.image);
   const [loadingPreview, setLoadingPreview] = useState(false);
   const [uploading, setUploading] = useState(false);
-  const { formData, resetForm, handleChange } = useForm({ file: null });
+  const { formData, resetForm, handleChange } = useForm({ file: "" });
   useEffect(() => setImage(props.image), [props.image]);
   const previewImage = (file) => {
     setLoadingPreview(true);
@@ -67,17 +67,28 @@ function ImageForm(props) {
           isInvalid={isInvalid}
           accept="image/jpeg"
         />
-        <Form.Control
+        <Button
+          variant="primary"
           type="submit"
-          className="btn btn-primary"
-          value={uploading ? "Uploading..." : "Upload image"}
           disabled={isInvalid || uploading}
-        />
-        <Form.Control
-          type="reset"
-          className="btn btn-outline-secondary"
-          value="Cancel"
-        />
+        >
+          {!uploading && <>Upload image</>}
+          {uploading && (
+            <>
+              <Spinner
+                as="span"
+                animation="grow"
+                size="sm"
+                role="status"
+                aria-hidden="true"
+              />
+              Uploading...
+            </>
+          )}
+        </Button>
+        <Button variant="outline-secondary" type="reset">
+          Cancel
+        </Button>
       </Stack>
     </Form>
   );
